@@ -1,6 +1,10 @@
-# HW 10
+# CW 11 with TODO's comments for HW 11
 ## testing
-### test of regex for validating Java variable name (class RegualrExpressionsTest)
-consider applying method "matches"
+### test void isArithmeticExpressionTest() 
+testing the method public static boolean isArithmeticExpression(String expr)
 ## functionality
-### writing method publcic static String javaVariable() returning regex for validating syntax of Java variable name (only ASCII symbols)
+### writing method public static boolean isArithmeticExpression(String expr)
+returns "true" if a given string contains sriyhmetic expression <br>
+arithmetic expression may contains spaces, operators and operands <br>
+operand may be either Java name or a number<br>
+operator may be only binary operator one out of 4 arithmetic operators [+*/-]<br>
