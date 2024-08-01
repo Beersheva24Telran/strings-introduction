@@ -1,8 +1,15 @@
 package telran.strings;
 
 import java.util.Arrays;
+import java.util.regex.*;
+
+import javax.lang.model.SourceVersion;
 
 public class Strings {
+    static Pattern pattern;
+    static {
+        pattern = Pattern.compile(getArithmeticRegex());
+    }
     static final String keyWords[] = { "abstract", "assert", "boolean",
                 "break", "byte", "case", "catch", "char", "class", "const",
                 "continue", "default", "do", "double", "else", "enum", "extends", "false",
@@ -65,7 +72,7 @@ public class Strings {
 }
 
     private static boolean isJavaKeyword(String string) {
-        return Arrays.binarySearch(keyWords, string) >= 0;
+        return SourceVersion.isKeyword(string);
     }
 public static boolean isArithmeticExpression(String expr) {
     //1. brackets
@@ -77,8 +84,8 @@ public static boolean isArithmeticExpression(String expr) {
     // Operator - regular expression for one out of 4 arithemetic operators [*/+-]
     //Operand may be either Java variable name or number (better any)
     
-    String arithmeticRegex = getArithmeticRegex();
-    boolean exprMatch = expr.matches(arithmeticRegex);
+    Matcher matcher = pattern.matcher(expr);
+    boolean exprMatch = matcher.matches();
     boolean pairness = pairnessCheck(expr);
     boolean javaNames = javaNamesCheck(expr);
     return  exprMatch && pairness && javaNames;
