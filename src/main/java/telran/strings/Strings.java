@@ -61,10 +61,13 @@ public class Strings {
 
     private static boolean isJavaName(String string) {
         
-        return string.matches(javaVariable()) && Arrays.binarySearch(keyWords, string) < 0;
+        return string.matches(javaVariable()) && !isJavaKeyword(string);
 }
+
+    private static boolean isJavaKeyword(String string) {
+        return Arrays.binarySearch(keyWords, string) >= 0;
+    }
 public static boolean isArithmeticExpression(String expr) {
-    //TODO
     //1. brackets
     //right position of open / close bracket is matter of regex
     //matching between open and close bracket is matter of the method you are supposed to write
@@ -73,6 +76,60 @@ public static boolean isArithmeticExpression(String expr) {
     //matching may be only in one case: at the ending up of going the counter will be 0
     // Operator - regular expression for one out of 4 arithemetic operators [*/+-]
     //Operand may be either Java variable name or number (better any)
-    return false;
+    
+    String arithmeticRegex = getArithmeticRegex();
+    boolean exprMatch = expr.matches(arithmeticRegex);
+    boolean pairness = pairnessCheck(expr);
+    boolean javaNames = javaNamesCheck(expr);
+    return  exprMatch && pairness && javaNames;
+}
+
+private static boolean javaNamesCheck(String expr) {
+    String[] operands = expr.split(getRegexForOperandsSep());
+    int index = 0;
+    while(index < operands.length && !isJavaKeyword(operands[index])) {
+        index++;
+    }
+    return index == operands.length;
+}
+
+private static String getRegexForOperandsSep() {
+    return String.format("%s|[\\s()]+", getOperatorRegex());
+}
+
+private static String getOperatorRegex() {
+    return "[+/*-]";
+}
+
+private static boolean pairnessCheck(String expr) {
+    char[] exprChars = expr.toCharArray();
+    int index = 0;
+    int counter = 0;
+    while(index < exprChars.length && counter >= 0) {
+        if (exprChars[index] == '(') {
+            counter++;
+        } else if(exprChars[index] == ')') {
+            counter--;
+        }
+        index++;
+    }
+    return counter == 0;
+}
+
+private static String getArithmeticRegex() {
+    String operator = getOperatorRegex();
+    String operand = getOperandRegex();
+    String regex = String.format("%s(%s%s)*", operand, operator, operand);
+    return regex;
+}
+
+private static String getOperandRegex() {
+    String number = getNumberRegex();
+    String regex = String.format("[\\s(]*(%s|%s)[\\s)]*", number, javaVariable());
+    return regex;
+}
+
+private static String getNumberRegex() {
+    return "\\d+\\.?\\d*|\\.\\d+";
 }
 }
